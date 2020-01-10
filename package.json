@@ -5,13 +5,17 @@
   "license": "MIT",
   "dependencies": {
     "@hapi/joi": "^17.0.0",
+    "body-parser": "^1.19.0",
     "express": "^4.17.1",
+    "http-errors": "^1.7.3",
     "isomorphic-ws": "^4.0.1",
     "lodash": "^4.17.15",
     "mongodb": "^3.4.1",
     "mongodb-reconnectable": "^1.0.3",
     "parseurl": "^1.3.3",
     "qs": "^6.9.1",
+    "re-authorization": "^1.1.0",
+    "redux-saga": "^1.1.3",
     "ws": "^7.2.1"
   }
 }
