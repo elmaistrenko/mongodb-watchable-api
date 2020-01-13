@@ -3,9 +3,9 @@
 
 
 "@babel/runtime@^7.1.2", "@babel/runtime@^7.3.1", "@babel/runtime@^7.4.0", "@babel/runtime@^7.4.4", "@babel/runtime@^7.5.5", "@babel/runtime@^7.6.2", "@babel/runtime@^7.6.3":
-  version "7.7.7"
-  resolved "https://registry.yarnpkg.com/@babel/runtime/-/runtime-7.7.7.tgz#194769ca8d6d7790ec23605af9ee3e42a0aa79cf"
-  integrity sha512-uCnC2JEVAu8AKB5do1WRIsvrdJ0flYx/A/9f/6chdacnEZ7LmavjdsDXr5ksYBegxtuTPR5Va9/+13QF/kFkCA==
+  version "7.8.0"
+  resolved "https://registry.yarnpkg.com/@babel/runtime/-/runtime-7.8.0.tgz#8c81711517c56b3d00c6de706b0fb13dc3531549"
+  integrity sha512-Z7ti+HB0puCcLmFE3x90kzaVgbx6TRrYIReaygW6EkBEnJh1ajS4/inhF7CypzWeDV3NFl1AfWj0eMtdihojxw==
   dependencies:
     regenerator-runtime "^0.13.2"
 
@@ -904,9 +904,9 @@ raw-body@2.4.0:
     unpipe "1.0.0"
 
 re-authorization@^1.1.0:
-  version "1.2.0"
-  resolved "https://registry.yarnpkg.com/re-authorization/-/re-authorization-1.2.0.tgz#daf737b53488ad7ac6a81ead676195c8038b50fc"
-  integrity sha512-KLLRkQLZzcnH9Ua2JjhBUz3pidNds0PHzUoBlhDDsCko7xOIImR6WDAWViKjrE7Kg8hve8w5Bofhs2tbKVCG5g==
+  version "1.3.0"
+  resolved "https://registry.yarnpkg.com/re-authorization/-/re-authorization-1.3.0.tgz#e59e784870b6f83c0b8b5e947815bf82471cb9b5"
+  integrity sha512-eksnrqPlsfk72ILJ5cUyZNfAIAv3c40KzfjjU/3+dQJsY2SW6sg0bFJZUbNNchntXobAAK9XxeZ9st8b245wDA==
   dependencies:
     "@hapi/joi" "^16.1.8"
     "@material-ui/core" "^4.8.1"

@@ -2,22 +2,22 @@ const {Server} = require('http');
 const WebSocket = require('ws');
 const createApiUpgrade = require('../lib/server/handleUpgrade');
 const {handleUpgrade: createAuthUpgrade} = require('re-authorization/lib/server/ws');
-const Joi = require('@hapi/joi');
 const {wrapper} = require('mongodb-reconnectable');
-const dbUtils = require('../lib/server/util.db');
 const express = require('express');
-const createApiController = require('../lib/server/express.controller');
-const createApiMiddleware = require('../lib/server/express.middleware');
+const createApiRouter = require('../lib/server/express.router');
 const bodyParser = require('body-parser');
-const createChangeChannel = require('../lib/server/channel.change');
+const cors = require('cors');
+const createOnChange = require('../lib/server/onChange');
+const {middleware: createOpenApiMiddleware, endpoint: openapiEndpoint} = require('../lib/server/express.openapi');
+const {authPaths, securitySchemes, security} = require('re-authorization/lib/server/util.openapi');
+const createFoo = require('./resources/foo');
 
 const app = express();
 
-const subscriptions = [];
-const intervalKeys = ['createdAt'];
-const distinctValuesKeys = ['username'];
 
-const changeChannel = createChangeChannel(coll, subscriptions, intervalKeys, distinctValuesKeys);
+
+const foo = createFoo(getFooColl);
+const {changeChannel, getSchemas, metaKeys} = foo;
 
 const {wrapped, destroy, isDestroyed} = wrapper({
     url: 'mongodb://localhost:28025',
@@ -25,15 +25,12 @@ const {wrapped, destroy, isDestroyed} = wrapper({
     clientOptions: {
         replicaSet: 'rs',
     },
-    onChange: function(change) {
-        const {ns: {db, coll: collName}} = change;
-        if (db === 'test' && collName === 'session') {
-            changeChannel.put(change);
-        }
+    onChange: function (change) {
+        createOnChange('test', 'session', changeChannel)(change);
     },
 });
 
-function coll() {
+function getFooColl() {
     return wrapped('test', 'session');
 }
 
@@ -43,65 +40,42 @@ const wss = new WebSocket.Server({
     clientTracking: false,
 });
 
-const getSchemas = async function(user) {
-    return {
-        insert: Joi.object({
-            foo: Joi.string(),
-        }),
-        match: Joi.object({
-            username: Joi.string(),
-            foo: Joi.string(),
-        }),
-        update: Joi.object({
-            $set: Joi.object({
-                foo: Joi.string(),
-            }),
-        }),
-        del: Joi.object({
-            _id: Joi.string().required().min(1),
-        }).required().min(1),
-    }
-};
 
-server.on('upgrade', (req, socket, head) => {
-    let handled = false;
+const onUpgrade = require('../lib/server/onUpgrade');
+onUpgrade.apply(server, [
     [
         // createAuthUpgrade('foobar'),
         createApiUpgrade({
-            wss, liveTime: 500000, subscriptions, pathname: '/foo', getSchemas,
+            wss,
+            liveTime: 500000,
+            ...foo,
         }),
-        function() {
-            socket.destroy();
-        },
-    ].forEach(handleUpgrade => {
-        if (!handled && !socket.destroyed) {
-            const r = handleUpgrade(req, socket, head);
-            if (r === true) {
-                handled = true;
-            } else if (r === false) {
-                socket.destroy();
-            }
-        }
-    });
-});
+    ]
+]);
 
-
-
-const router = new express.Router();
-const controller = createApiController(coll, intervalKeys, distinctValuesKeys);
-const middleware = createApiMiddleware(getSchemas);
-
+app.use(cors());
 app.use(bodyParser.json());
 
-router.get('/distinct', middleware, controller.distinct);
-router.get('/:_id', middleware, controller.get);
-router.get('/', middleware, controller.get);
-router.post('/', middleware, controller.post);
-router.patch('/:_id', middleware, controller.patch);
-router.patch('/', middleware, controller.patch);
-router.delete('/:_id', middleware, controller.del);
-router.delete('/', middleware, controller.del);
 
-app.use('/foo', router);
+
+app.use('/foo', createApiRouter(getFooColl, getSchemas, metaKeys));
+
+app.get('/openapi', createOpenApiMiddleware({
+    openapi: '3.0.0',
+    info: {
+        title: 'some api',
+        version: '1.0.0',
+        description: 'some description',
+    },
+    servers: [
+        {url: 'http://localhost:3456'},
+    ],
+    components: {
+        securitySchemes,
+    },
+    paths: authPaths('', 'Authorization'),
+}, security, foo), openapiEndpoint);
+
+
 
 server.listen(3456);
