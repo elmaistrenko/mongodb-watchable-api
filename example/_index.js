@@ -20,15 +20,17 @@ const foo = createFoo(getFooColl);
 const {changeChannel, getSchemas, metaKeys} = foo;
 
 const {wrapped, destroy, isDestroyed} = wrapper({
-    url: 'mongodb://localhost:28025',
+    url: 'mongodb://5.53.125.201:28025',
     onError: console.log,
     clientOptions: {
         replicaSet: 'rs',
     },
-    onChange: function (change) {
-        createOnChange('test', 'session', changeChannel)(change);
-    },
+    onChange,
 });
+
+function onChange(change) {
+    createOnChange('test', 'session', changeChannel)(change);
+}
 
 function getFooColl() {
     return wrapped('test', 'session');
