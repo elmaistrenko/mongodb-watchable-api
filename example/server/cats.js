@@ -20,7 +20,7 @@ async function getSchemas(user) {
         }).required().min(1);
     };
     return {
-        document,
+        document: document(),
         updateMatch: Joi.object({
             _id: Joi.alternatives().try(idSchema.required(), Joi.object({
                 $in: Joi.array().items(idSchema.required()).required().min(1),
@@ -39,6 +39,8 @@ async function getSchemas(user) {
         }),
     }
 }
+
+getSchemas().then(c => console.log(c.match.describe()));
 
 module.exports = {
     dbName,

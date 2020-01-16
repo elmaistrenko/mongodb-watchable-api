@@ -18,7 +18,7 @@ const {
 const errorHandler = console.log;
 
 const dbWrapper = wrapper({
-    url: 'mongodb://5.53.125.201:28025',
+    url: 'mongodb://localhost:28025',
     onError: errorHandler,
     clientOptions: {
         replicaSet: 'rs',
@@ -37,7 +37,7 @@ const wss = new WebSocket.Server({
 const resources = [require('./books'), require('./cats')].map(config => createApiParts({
     ...config,
     wss,
-    wsLiveTime: 30000,
+    wsLiveTime: 2000,
     dbWrapper,
     errorHandler,
 }));
@@ -57,7 +57,7 @@ onUpgrade.apply(server, [
 
 app.use(auth.router);
 
-resources.forEach(r => app.use(r.pathname, auth.middleware, r.expressRouter));
+resources.forEach(r => app.use(r.pathname/*, auth.middleware*/, r.expressRouter, ));
 
 app.get('/openapi', createOpenApiMiddleware(
     require('./openapi'),
