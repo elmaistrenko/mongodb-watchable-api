@@ -14,7 +14,7 @@
     "mongodb": "^3.4.1",
     "mongodb-reconnectable": "^1.0.3",
     "parseurl": "^1.3.3",
-    "qs": "^6.9.1",
+    "qs": "^6.9.7",
     "re-authorization": "^1.1.0",
     "redux": "^4.0.5",
     "redux-saga": "^1.1.3",
